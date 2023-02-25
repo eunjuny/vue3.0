@@ -1,55 +1,58 @@
 <template>
   <div class="container">
-  <h2>To-Do List</h2>
-  <form 
-  @submit.prevent="onSubmit"
-  class="d-flex">
-    <div class="flex-grow-1 mr-2">
-    <input 
-    class="form-control"
-  type="text" 
-  v-model="todo"
-  placeholder="Type new to-do"
-  >
-</div>
-<div>
-  <button 
-  class="btn btn-primary"
-  type="submit"
-  @click="onSubmit">
-  Add
-  </button>
-</div>
-  </form>
-  {{ todos }}
-</div>
+    <h2>To-Do List</h2>
+    <TodoSimpleForm @add-todo="addTodo" />
+    
+    <div v-if="!todos.length">
+      추가된 Todo가 없습니다
+    </div>
+    <TodoList 
+      :todos="todos" 
+      @toggle-todo="toggleTodo"
+      @delete-todo="deleteTodo"
+    />
+  </div>
 </template>
 
 <script>
 import { ref } from 'vue';
+import TodoSimpleForm from './components/TodoSimpleForm.vue';
+import TodoList from './components/TodoList.vue';
 
 export default {
-  setup(){
-    let todo = ref('');
+  components: {
+    TodoSimpleForm,
+    TodoList,
+  },
+  setup() {
     const todos = ref([]);
 
-    const onSubmit = () => {
-      todos.value.push({
-        id: Date.now(),
-        subject : todo.value
-      })
-    }
+    const addTodo = (todo) => {
+      todos.value.push(todo);
+    };
+
+    const deleteTodo = (index) => {
+      todos.value.splice(index, 1);
+    };
+
+    const toggleTodo = (index) => {
+      console.log(index)
+      todos.value[index].completed = !todos.value[index].completed
+    };
 
     return {
-      todo,
       todos,
-      onSubmit,
+      addTodo,
+      deleteTodo,
+      toggleTodo,
     };
   }
 }
 </script>
 
 <style>
-
+  .todo {
+    color: gray;
+    text-decoration: line-through;
+  }
 </style>
-
